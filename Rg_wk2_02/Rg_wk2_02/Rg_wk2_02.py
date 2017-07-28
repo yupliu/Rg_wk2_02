@@ -56,25 +56,25 @@ def regression_GD(feature_matrix,output,initial_weights,step_size,tolerance):
     while not converged:
         # compute the predictions based on feature_matrix and weights using your predict_output() function
         prediction = predict_output(feature_matrix,weights)
-        print prediction
+        #print prediction
         # compute the errors as predictions - output
         errors = prediction - output
-        print errors
+        #print errors
         gradient_sum_square = 0  # initialize the gradient sum of squares
         for i in range(len(weights)): # loop over each weight
             # Recall that feature_matrix[:, i] is the feature column associated with weights[i]
             # compute the derivative for weight[i]:
             derivative = feature_derivative(errors,feature_matrix[:,i])
-            print derivative
+            #print derivative
             # add the squared value of the derivative to the gradient sum of squares (for assessing convergence)
             gradient_sum_square = gradient_sum_square + derivative * derivative
-            print gradient_sum_square
+            #print gradient_sum_square
             # subtract the step size times the derivative from the current weight
             weights[i] = weights[i] - step_size * derivative
-            print weights[i]
+            #print weights[i]
             # compute the square-root of the gradient sum of squares to get the gradient magnitude:            
             gradient_magnitude = sqrt(gradient_sum_square)
-            print gradient_magnitude
+            #print gradient_magnitude
             count = count + 1
         #if gradient_magnitude < tolerance or count>10:
         if gradient_magnitude < tolerance:
@@ -90,3 +90,33 @@ step_size = 7e-12
 tolerance = 2.5e7
 weights_final = regression_GD(simple_feature_matrix,output,initial_weights,step_size,tolerance)
 print weights_final
+
+#run test using the first model
+(test_simple_feature_matrix, test_output) = get_numpy_data(test_data, simple_features, my_output)
+predict_value = predict_output(test_simple_feature_matrix,weights_final)
+print predict_value
+
+
+model_features = ['sqft_living', 'sqft_living15'] # sqft_living15 is the average squarefeet for the nearest 15 neighbors. 
+my_output = 'price'
+(feature_matrix, output) = get_numpy_data(train_data, model_features, my_output)
+initial_weights = np.array([-100000., 1., 1.])
+step_size = 4e-12
+tolerance = 1e9
+weights_final = regression_GD(feature_matrix,output,initial_weights,step_size,tolerance)
+print weights_final
+
+#run test using the second model
+(test_simple_feature_matrix, test_output) = get_numpy_data(test_data, model_features, my_output)
+predict_value_2 = predict_output(test_simple_feature_matrix,weights_final)
+print predict_value_2
+
+err1 = predict_value - test_output
+err1 = err1*err1
+rss1 = sqrt(err1.sum())
+print rss1
+ 
+err2 = predict_value_2 - test_output
+err2 = err2*err2
+rss2 = sqrt(err2.sum())
+print rss2
